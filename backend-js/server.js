@@ -2,6 +2,10 @@ import express from "express";
 import mongoose from "mongoose";
 import "dotenv/config";
 import bcrypt from "bcryptjs";
+import User from "./schema/user.js";
+import { nanoid } from "nanoid";
+import user from "./schema/user.js";
+import jwt from "jsonwebtoken";
 
 const PORT = 3000 || process.env.PORT;
 
@@ -16,6 +20,34 @@ server.use(express.urlencoded({ extended: true }));
 mongoose.connect(process.env.DB_URL, {
 	autoIndex: true,
 });
+
+const formatDataToSend = () => {
+	const access_token = jwt.sign(
+		{
+			id: user._id,
+		},
+		process.env.JWT_SECRET
+	);
+
+	return {
+		access_token,
+		profile_img: user.personal_info.profile_img,
+		username: user.personal_info.username,
+		password: user.personal_info.password,
+	};
+};
+
+const generateUserName = async (email) => {
+	let username = email.split("@")[0];
+
+	let isUsernameNotUnique = await User.exists({
+		"personal_info.username": username,
+	}).then((result) => result);
+
+	isUsernameNotUnique ? (username += nanoid().substring(0, 5)) : "";
+
+	return username;
+};
 
 server.post("/signup", (req, res, next) => {
 	const { fullname, email, password } = req.body;
@@ -35,10 +67,23 @@ server.post("/signup", (req, res, next) => {
 				"Password should be 6 to 20 characters long with a numeric, 1 lowercase adn 1 uppercase letters",
 		});
 
-	bcrypt.hash(password, 10, (err, hashedPassword) => {
-		console.log(hashedPassword);
+	bcrypt.hash(password, 10, async (err, hashedPassword) => {
+		let username = await generateUserName(email);
+
+		let user = new User({
+			personal_info: { fullname, email, password: hashedPassword, username },
+		});
+
+		user
+			.save()
+			.then((usr) => {
+				return res.status(200).json(formatDataToSend(usr));
+			})
+			.catch((err) => {
+				if (err.code === 11000)
+					return res.status(500).json({ error: "Email already exists" });
+			});
 	});
-	res.json(req.body);
 });
 
 server.listen(process.env.PORT || PORT, () => {
