@@ -4,7 +4,7 @@ import "dotenv/config";
 import bcrypt from "bcryptjs";
 import User from "./schema/user.js";
 import { nanoid } from "nanoid";
-import user from "./schema/user.js";
+import cors from "cors";
 import jwt from "jsonwebtoken";
 
 const PORT = 3000 || process.env.PORT;
@@ -16,12 +16,13 @@ const server = express();
 
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
+server.use(cors({ origin: true, credentials: true }));
 
 mongoose.connect(process.env.DB_URL, {
 	autoIndex: true,
 });
 
-const formatDataToSend = () => {
+const formatDataToSend = (user) => {
 	const access_token = jwt.sign(
 		{
 			id: user._id,
@@ -84,6 +85,38 @@ server.post("/signup", (req, res, next) => {
 					return res.status(500).json({ error: "Email already exists" });
 			});
 	});
+});
+
+server.post("/signin", (req, res, next) => {
+	let { email, password } = req.body;
+
+	User.findOne({
+		"personal_info.email": email,
+	})
+		.then((user) => {
+			if (!user) {
+				return res.status(403).json({
+					error: "Email is not found",
+				});
+			}
+
+			bcrypt.compare(password, user.personal_info.password, (err, result) => {
+				if (err)
+					return res.status(403).json({
+						error: "Error occured while login, Please try again",
+					});
+				if (!result) {
+					return res.status(403).json({
+						error: "Incorrect password",
+					});
+				} else return res.status(200).json(formatDataToSend(user));
+			});
+		})
+		.catch((err) => {
+			res.status(500).json({
+				error: err.message,
+			});
+		});
 });
 
 server.listen(process.env.PORT || PORT, () => {

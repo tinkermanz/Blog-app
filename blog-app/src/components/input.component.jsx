@@ -14,6 +14,8 @@ export const InputBox = ({ name, type, id, value, placeholder, icon }) => {
 				defaultValue={value}
 				id={id}
 				className="input-box"
+				{...(type === "password" ? { autoComplete: "current-password" } : {})}
+				{...(type === "email" ? { autoComplete: "username" } : {})}
 			/>
 			<i className={`fi ${icon} input-icon`}></i>
 

@@ -2,12 +2,64 @@ import AnimationWrapper from "../common/page-animation";
 import InputBox from "../components/input.component";
 import googleIcon from "../imgs/google.png";
 import { Link } from "react-router";
+import { toast, Toaster } from "react-hot-toast";
+import { useRef } from "react";
+import axios from "axios";
 
 const UserAuthForm = ({ type }) => {
+	const authForm = useRef();
+
+	const userAuthThroughServer = (serverRoute, formData) => {
+		axios
+			.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData)
+			.then((data) => {
+				console.log(data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+
+		let serverRoute = type === "sign-in" ? "/signin" : "/signup";
+
+		const form = new FormData(e.currentTarget);
+
+		let emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/; // regex for email
+		let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
+
+		const formData = {};
+
+		for (let [key, value] of form.entries()) formData[key] = value;
+
+		console.log(formData);
+
+		let { fullname, email, password } = formData;
+
+		if (fullname && fullname.length < 3)
+			return toast.error("Fullname must be atleast 3 letters long");
+		if (!email.length) return toast.error("Enter Email");
+		if (!emailRegex.test(email)) return toast.error("Email is invalid");
+		if (!passwordRegex.test(password))
+			return toast.error(
+				"Password should be 6 to 20 characters long with a numeric, 1 lowercase adn 1 uppercase letters"
+			);
+
+		userAuthThroughServer(serverRoute, formData);
+	};
+
 	return (
 		<AnimationWrapper keyValue={type}>
 			<section className="h-cover flex items-center justify-center">
-				<form className="w-[80%] max-w-[400px]">
+				<Toaster />
+				<form
+					ref={authForm}
+					id="authForm"
+					className="w-[80%] max-w-[400px]"
+					onSubmit={handleSubmit}
+				>
 					<h1 className="text-4xl font-gelasio capitalize text-center mb-24">
 						{type === "sign-in" ? "Welcome back" : "Join us Today"}
 					</h1>
