@@ -7,6 +7,7 @@ import { useContext, useRef } from "react";
 import axios from "axios";
 import { storeInsession } from "../common/session";
 import { UserContext } from "../App";
+import { authWithGoogle } from "../common/firebase";
 
 const UserAuthForm = ({ type }) => {
 	const authForm = useRef();
@@ -53,6 +54,18 @@ const UserAuthForm = ({ type }) => {
 			);
 
 		userAuthThroughServer(serverRoute, formData);
+	};
+
+	const handleGoogleAuth = (e) => {
+		e.preventDefault();
+		authWithGoogle()
+			.then((user) => {
+				console.log(user);
+			})
+			.catch((err) => {
+				toast.error("Trouble with login through Google");
+				return console.log(err);
+			});
 	};
 
 	return userAuth?.access_token ? (
@@ -103,14 +116,17 @@ const UserAuthForm = ({ type }) => {
 						<hr className="w-1/2 border-black" />
 					</div>
 
-					<button className="btn-dark flex items-center justify-center gap-4 w-[90%] center">
+					<button
+						className="btn-dark flex items-center justify-center gap-4 w-[90%] center"
+						onClick={handleGoogleAuth}
+					>
 						<img src={googleIcon} alt="" className="w-5 " />
 						Continue with Google
 					</button>
 
 					{type === "sign-in" ? (
 						<p className="mt-6 text-dark-grey text-xl text-center">
-							Don't have an Account{" "}
+							Don't have an Account
 							<Link to="/signup" className="underline  text-black text-xl ml-1">
 								Join us Today
 							</Link>
