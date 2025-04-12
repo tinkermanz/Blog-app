@@ -9,14 +9,14 @@ import jwt from "jsonwebtoken";
 
 const PORT = 3000 || process.env.PORT;
 
-let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
-let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
-
 const server = express();
 
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(cors({ origin: true, credentials: true }));
+
+let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
+let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
 mongoose.connect(process.env.DB_URL, {
 	autoIndex: true,
