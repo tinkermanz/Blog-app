@@ -9,6 +9,9 @@ import jwt from "jsonwebtoken";
 import serviceAccountKey from "./blog-app-demo-1c186-firebase-adminsdk-fbsvc-b338714ab5.json" with {type: 'json'}
 import admin from "firebase-admin";
 import { getAuth } from "firebase-admin/auth";
+import multer  from "multer";
+import {uploadOnCloudinary} from './cloudinary.js'
+
 
 const PORT = 3000 || process.env.PORT;
 
@@ -21,6 +24,20 @@ admin.initializeApp({
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(cors({ origin: true, credentials: true }));
+
+
+const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+	  cb(null, './tmp')
+	},
+	filename: function (req, file, cb) {
+	  
+	  cb(null, file.originalname)
+	}
+  })
+const upload = multer({
+	storage: storage
+})
 
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
@@ -56,6 +73,20 @@ const generateUserName = async (email) => {
 
 	return username;
 };
+
+
+server.post('/upload-banner', upload.single('banner'),async (req, res, next) => {
+	const bannerPath = req.file?.path;
+
+	if(bannerPath){
+		const banner = await uploadOnCloudinary(bannerPath)
+		res.status(200).json({
+			uploadUrl : banner.secure_url
+		})
+	}
+
+} )
+
 
 server.post("/signup", (req, res, next) => {
 	const { fullname, email, password } = req.body;
