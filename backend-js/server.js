@@ -10,7 +10,8 @@ import serviceAccountKey from "./blog-app-demo-1c186-firebase-adminsdk-fbsvc-b33
 import admin from "firebase-admin";
 import { getAuth } from "firebase-admin/auth";
 import multer  from "multer";
-import {uploadOnCloudinary} from './cloudinary.js'
+import { uploadOnCloudinary } from "./utils/cloudinary.js";
+
 
 
 const PORT = 3000 || process.env.PORT;
@@ -26,6 +27,7 @@ server.use(express.urlencoded({ extended: true }));
 server.use(cors({ origin: true, credentials: true }));
 
 
+
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
 	  cb(null, './tmp')
@@ -38,6 +40,8 @@ const storage = multer.diskStorage({
 const upload = multer({
 	storage: storage
 })
+
+
 
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
@@ -81,7 +85,7 @@ server.post('/upload-banner', upload.single('banner'),async (req, res, next) => 
 	if(bannerPath){
 		const banner = await uploadOnCloudinary(bannerPath)
 		res.status(200).json({
-			uploadUrl : banner.secure_url
+			bannerUrl : banner.secure_url
 		})
 	}
 
