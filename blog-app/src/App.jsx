@@ -22,8 +22,6 @@ const App = () => {
 			  });
 	}, []);
 
-	console.log(userAuth);
-
 	return (
 		<UserContext.Provider
 			value={{

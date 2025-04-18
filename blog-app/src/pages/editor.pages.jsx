@@ -3,10 +3,11 @@ import { Navigate } from "react-router";
 import { UserContext } from "../App";
 import BlogEditor from "./blog-editor.component";
 import PublishForm from "./publish-form.component";
+import defaultBanner from "../imgs/blog banner.png";
 
 const blogStructure = {
 	title: "",
-	banner: "",
+	banner: defaultBanner,
 	content: [],
 	tags: [],
 	des: "",

@@ -79,18 +79,29 @@ const generateUserName = async (email) => {
 };
 
 
-server.post('/upload-banner', upload.single('banner'),async (req, res, next) => {
+server.post('/upload-banner', upload.single('banner'), async (req, res, next) => {
 	const bannerPath = req.file?.path;
 
 	if(bannerPath){
 		const banner = await uploadOnCloudinary(bannerPath)
-		res.status(200).json({
+		return res.status(200).json({
 			bannerUrl : banner.secure_url
 		})
 	}
 
 } )
 
+server.post('/upload-img', upload.single('img') , async(req,res, next)=> {
+	const imgPath = req.file?.path
+
+	if (imgPath) {
+		const img = await uploadOnCloudinary(imgPath)
+		return res.status(200).json({
+			imgUrl : img.secure_url
+		})
+	}
+
+})
 
 server.post("/signup", (req, res, next) => {
 	const { fullname, email, password } = req.body;

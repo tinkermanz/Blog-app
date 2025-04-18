@@ -2,17 +2,31 @@ import { Link } from "react-router";
 import logo from "../imgs/logo.png";
 import AnimationWrapper from "../common/page-animation";
 import axios from "axios";
-import { useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { EditorContext } from "./editor.pages";
-import defaultBanner from "../imgs/blog banner.png";
+import EditorJS from "@editorjs/editorjs";
+import { tools } from "../common/editorjs-tools";
 
 const BlogEditor = () => {
+	const isReady = useRef(false);
+
 	let {
 		blog,
 		blog: { title, banner, content, tags, des },
 		setBlog,
 	} = useContext(EditorContext);
+
+	useEffect(() => {
+		if (!isReady.current)
+			new EditorJS({
+				holder: "textEditor",
+				data: "",
+				tools,
+				placeholder: "Let's write an awesome story",
+			});
+		isReady.current = true;
+	}, []);
 
 	const handleBannerUpload = (e) => {
 		console.log(e);
@@ -24,7 +38,7 @@ const BlogEditor = () => {
 
 			const formData = new FormData();
 			formData.append("banner", img);
-			console.log(formData.entries());
+
 			axios
 				.post(import.meta.env.VITE_SERVER_DOMAIN + "/upload-banner", formData)
 				.then((res) => {
@@ -61,11 +75,6 @@ const BlogEditor = () => {
 		});
 	};
 
-	const handleError = (e) => {
-		let img = e.target;
-		img.src = defaultBanner;
-	};
-
 	return (
 		<>
 			<nav className="navbar">
@@ -73,7 +82,6 @@ const BlogEditor = () => {
 					<img src={logo} alt="" />
 				</Link>
 				<p className="max-md:hidden text-black line-clamp-1 w-full">
-					{console.log("hello")}
 					{title.length ? title : "New Blog"}
 				</p>
 				<div className="flex gap-4 ml-auto">
@@ -87,12 +95,7 @@ const BlogEditor = () => {
 					<div className="mx-auto max-w-[900px] w-full">
 						<div className="relative aspect-video bg-white border-4 border-grey hover:opacity-80">
 							<label htmlFor="uploadBanner">
-								<img
-									onError={handleError}
-									src={banner}
-									alt=""
-									className="z-20"
-								/>
+								<img src={banner} alt="" className="z-20" />
 								<input
 									id="uploadBanner"
 									type="file"
@@ -113,6 +116,8 @@ const BlogEditor = () => {
 						></textarea>
 
 						<hr className="w-full opacity-10 my-5" />
+
+						<div id="textEditor" className="font-gelasio"></div>
 					</div>
 				</section>
 			</AnimationWrapper>
