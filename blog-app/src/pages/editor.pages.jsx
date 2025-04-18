@@ -19,6 +19,7 @@ export const EditorContext = createContext({});
 const Editor = () => {
 	const [blog, setBlog] = useState(blogStructure);
 	const [editorState, setEditorState] = useState("editor");
+	const [textEditor, setTextEditor] = useState({ isReady: false });
 
 	const { userAuth, setUserAuth } = useContext(UserContext);
 
@@ -29,6 +30,8 @@ const Editor = () => {
 				setBlog,
 				editorState,
 				setEditorState,
+				textEditor,
+				setTextEditor,
 			}}
 		>
 			{userAuth?.access_token === null ? (
