@@ -7,6 +7,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { EditorContext } from "./editor.pages";
 import EditorJS from "@editorjs/editorjs";
 import { tools } from "../common/editorjs-tools";
+import defaultBanner from "../imgs/blog banner.png";
 
 const BlogEditor = () => {
 	const isReady = useRef(false);
@@ -83,10 +84,10 @@ const BlogEditor = () => {
 	};
 
 	const handlePublishEvent = () => {
-		// if (banner === defaultBanner)
-		// 	return toast.error("Upload a blog banner to puslish it");
+		if (banner === defaultBanner)
+			return toast.error("Upload a blog banner to puslish it");
 
-		// if (!title.length) return toast.error("Write blog title to publish it");
+		if (!title.length) return toast.error("Write blog title to publish it");
 
 		if (textEditor.isReady) {
 			textEditor
