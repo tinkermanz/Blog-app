@@ -3,17 +3,26 @@ import AnimationWrapper from "../common/page-animation";
 import { useContext } from "react";
 import { EditorContext } from "./editor.pages";
 import Tag from "../components/tags.component";
+import axios from "axios";
+import { UserContext } from "../App";
+import { useNavigate } from "react-router";
 
 const PublishForm = () => {
 	const characterLimit = 200;
 	const tagLimit = 10;
 
+	let navigate = useNavigate();
+
 	let {
 		blog,
-		blog: { banner, title, des, tags },
+		blog: { banner, title, des, tags, content },
 		setEditorState,
 		setBlog,
 	} = useContext(EditorContext);
+
+	let {
+		userAuth: { access_token },
+	} = useContext(UserContext);
 
 	const handleCloseEvent = () => {
 		setEditorState("editor");
@@ -59,6 +68,53 @@ const PublishForm = () => {
 
 			e.target.value = "";
 		}
+	};
+
+	const publishBlog = (e) => {
+		if (e.target.classList.includes("disable")) {
+			return;
+		}
+
+		if (!title.length) return toast.error("Write blog title before publishing");
+		if (!des.length || des.length > characterLimit)
+			return toast.error(
+				`Write a description about your blog within ${characterLimit} character to publish`
+			);
+		if (!tags.length) return toast.error("Enter at least 1 tag to to publish");
+
+		let loadingToast = toast.loading("Publishing...");
+
+		e.target.classList.add("disable");
+
+		const blogObj = {
+			title,
+			banner,
+			des,
+			content,
+			tags,
+			draft: false,
+		};
+
+		axios
+			.post(import.meta.env.VITE_SERVER_DOMAIN + "/create-blog", blogObj, {
+				headers: {
+					Authroization: `Bearer ${access_token}`,
+				},
+			})
+			.then(() => {
+				e.target.classList.remove("disable");
+				toast.dismiss(loadingToast);
+				toast.success("Published 👍");
+
+				setTimeout(() => {
+					navigate("/");
+				}, 500);
+			})
+			.catch(({ response }) => {
+				e.target.classList.remove("disable");
+				toast.dismiss(loadingToast);
+				return toast.error(response.data.error);
+			});
 	};
 
 	return (
@@ -129,7 +185,9 @@ const PublishForm = () => {
 							{tagLimit - tags.length} Tags left
 						</p>
 
-						<button className="btn-dark px-8">Publish</button>
+						<button className="btn-dark px-8" onClick={publishBlog}>
+							Publish
+						</button>
 					</div>
 				</div>
 			</section>
