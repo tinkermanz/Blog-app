@@ -7,7 +7,6 @@ import { Toaster, toast } from "react-hot-toast";
 import { EditorContext } from "./editor.pages";
 import EditorJS from "@editorjs/editorjs";
 import { tools } from "../common/editorjs-tools";
-import defaultBanner from "../imgs/blog banner.png";
 
 const BlogEditor = () => {
 	const isReady = useRef(false);
@@ -26,13 +25,13 @@ const BlogEditor = () => {
 			setTextEditor(
 				new EditorJS({
 					holder: "textEditor",
-					data: "",
+					data: content,
 					tools,
 					placeholder: "Let's write an awesome story",
 				})
 			);
 		isReady.current = true;
-	}, [setTextEditor]);
+	}, [setTextEditor, content]);
 
 	console.log(textEditor);
 
@@ -40,7 +39,7 @@ const BlogEditor = () => {
 		console.log(e);
 
 		let img = e.target.files[0];
-		console.log(img);
+
 		if (img) {
 			let loadingToast = toast.loading("Uploading...");
 
@@ -84,12 +83,10 @@ const BlogEditor = () => {
 	};
 
 	const handlePublishEvent = () => {
-		if (banner === defaultBanner)
-			return toast.error("Upload a blog banner to puslish it");
+		// if (banner === defaultBanner)
+		// 	return toast.error("Upload a blog banner to puslish it");
 
-		if (!title.length) return toast.error("Write blog title to publish it");
-
-		console.log(blog);
+		// if (!title.length) return toast.error("Write blog title to publish it");
 
 		if (textEditor.isReady) {
 			textEditor
@@ -144,8 +141,7 @@ const BlogEditor = () => {
 						</div>
 
 						<textarea
-							name=""
-							id=""
+							defaultValue={title}
 							placeholder="Blog title"
 							className="text-4xl font-medium w-full outline-none h-20 resize-none mt-10 leading-tight placeholder:opacity-40"
 							onKeyDown={handleTitleKeydown}

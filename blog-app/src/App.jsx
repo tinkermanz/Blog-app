@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router";
-import Navbar from "./components/navbar.components";
+import Navbar from "./components/navbar.component";
 import UserAuthForm from "./pages/userAuthForm";
 import { createContext, useEffect, useState } from "react";
 import { lookInSession } from "./common/session";
