@@ -71,7 +71,7 @@ const PublishForm = () => {
 	};
 
 	const publishBlog = (e) => {
-		if (e.target.classList.includes("disable")) {
+		if (e.target.classList.contains("disable")) {
 			return;
 		}
 

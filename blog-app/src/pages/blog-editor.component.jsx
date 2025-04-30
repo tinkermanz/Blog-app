@@ -14,9 +14,9 @@ const BlogEditor = () => {
 	let navigate = useNavigate();
 
 	const isReady = useRef(false);
-	let {
-		userAuth: { access_token },
-	} = useContext(UserContext);
+	let { userAuth } = useContext(UserContext);
+
+	console.log(userAuth);
 
 	let {
 		blog,
@@ -140,7 +140,7 @@ const BlogEditor = () => {
 				axios
 					.post(import.meta.env.VITE_SERVER_DOMAIN + "/create-blog", blogObj, {
 						headers: {
-							Authroization: `Bearer ${access_token}`,
+							Authroization: `Bearer ${userAuth?.access_token}`,
 						},
 					})
 					.then(() => {

@@ -2,7 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import "dotenv/config";
 import bcrypt from "bcryptjs";
-import User from "./schema/user.js";
+import User from "./schema/User.js";
+import Blog from './schema/Blog.js'
 import { nanoid } from "nanoid";
 import cors from "cors";
 import jwt from "jsonwebtoken";
@@ -243,12 +244,16 @@ server.post("/google-auth", async (req, res, next) => {
 
 const verifyJWT = (req, res, next) => {
 
-	const authHeader = req.headers['authorization']
+	const authHeader = req.headers['authroization']
 	const token = authHeader && authHeader.split(' ')[1]
 
+	console.log(req.headers['authroization'].split(' ')[1])
+	
 	if (!token) return res.status(401).json({
 		error: 'No access token found'
 	})
+
+	
 
 	jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
 		if (err) return res.status(403).json({error: "Access token is invalid"})
@@ -260,7 +265,9 @@ const verifyJWT = (req, res, next) => {
 
 server.post('/create-blog', verifyJWT, (req, res, next)=> {
 
-	let autherId = req.user;
+	let authorId = req.user;
+
+	console.log(authorId)
 
 	let {title, des, banner, tags, content, draft} = req.body
 
@@ -281,22 +288,21 @@ server.post('/create-blog', verifyJWT, (req, res, next)=> {
 		})
 	}
 
-	
-	
-
 	tags = tags.map(tag => tag.toLowerCase())
 
-	let blog_Id = title.replace(/[^a-zA-Z0-9]/g, '').replace(/\s+/g, '-').trim() + nanoid()
+	let blog_id = title.replace(/[^a-zA-Z0-9]/g, '').replace(/\s+/g, '-').trim() + nanoid()
 
 
 	let blog = new Blog({
 		title,
 		des,
-		banner, content, tags, author: autherId, blog_id, draft: Boolean(draft)
+		banner, content, tags, author: authorId, blog_id, draft: Boolean(draft)
 	})
 
 	blog.save().then(blog => {
 		let incrementVal = draft ? 0: 1
+
+		console.log(blog)
 
 		User.findOneAndUpdate({_id: authorId}, {$inc: {
 			"account_info.total_posts": incrementVal},
@@ -306,7 +312,7 @@ server.post('/create-blog', verifyJWT, (req, res, next)=> {
 				id: blog.blog_id
 			})
 		}).catch(err => {
-			return res.status(500).json({error: 'Failde to update total posts number'})
+			return res.status(500).json({error: 'Failed to update total posts number'})
 		})
 	}).catch(err => {
 		return res.status(500).json({
