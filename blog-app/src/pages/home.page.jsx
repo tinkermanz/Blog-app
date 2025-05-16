@@ -3,6 +3,7 @@ import AnimationWrapper from "../common/page-animation";
 import InPageNavigation from "../components/inpage-navigation.component";
 import { useEffect, useState } from "react";
 import Loader from "../components/loader.component";
+import BlogPostCard from "../common/blog-post.component";
 
 const HomePage = () => {
 	let [blogs, setBlogs] = useState(null);
@@ -35,7 +36,17 @@ const HomePage = () => {
 							{blogs == null ? (
 								<Loader />
 							) : (
-								blogs.map((blog, i) => <h1 key={i}>{blog.title}</h1>)
+								blogs.map((blog, i) => (
+									<AnimationWrapper
+										transition={{ duration: 1, delay: i * 0.1 }}
+										key={i}
+									>
+										<BlogPostCard
+											content={blog}
+											author={blog.author.personal_info}
+										/>
+									</AnimationWrapper>
+								))
 							)}
 						</>
 						<h1>Trending Blogs</h1>
