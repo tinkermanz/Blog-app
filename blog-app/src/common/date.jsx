@@ -15,7 +15,7 @@ let months = [
 
 let days = ["sunday", "monday", "tuesday", "thrusday", "friday", "saturday"];
 
-export const getday = (timestamp) => {
+export const getDay = (timestamp) => {
 	let date = new Date(timestamp);
 
 	return `${date.getDate()} ${months[date.getMonth()]}`;
