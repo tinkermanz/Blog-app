@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import Loader from "../components/loader.component";
 import BlogPostCard from "../common/blog-post.component";
 import MinimalBlogPost from "../components/minimal-blog-post.component";
+import NoDataMessage from "../components/nodata.component";
 
 const HomePage = () => {
 	let [blogs, setBlogs] = useState(null);
@@ -94,7 +95,7 @@ const HomePage = () => {
 						<>
 							{blogs === null ? (
 								<Loader />
-							) : (
+							) : blogs.length ? (
 								blogs.map((blog, i) => (
 									<AnimationWrapper
 										transition={{ duration: 1, delay: i * 0.1 }}
@@ -106,12 +107,14 @@ const HomePage = () => {
 										/>
 									</AnimationWrapper>
 								))
+							) : (
+								<NoDataMessage message="No Blogs published" />
 							)}
 						</>
 
 						{trendingBlogs === null ? (
 							<Loader />
-						) : (
+						) : trendingBlogs.length ? (
 							trendingBlogs.map((blog, i) => (
 								<AnimationWrapper
 									transition={{ duration: 1, delay: i * 0.1 }}
@@ -120,6 +123,8 @@ const HomePage = () => {
 									<MinimalBlogPost blog={blog} index={i} />
 								</AnimationWrapper>
 							))
+						) : (
+							<NoDataMessage message="No Trending Blogs" />
 						)}
 					</InPageNavigation>
 				</div>
@@ -152,7 +157,7 @@ const HomePage = () => {
 							</h1>
 							{trendingBlogs === null ? (
 								<Loader />
-							) : (
+							) : trendingBlogs.length ? (
 								trendingBlogs.map((blog, i) => (
 									<AnimationWrapper
 										transition={{ duration: 1, delay: i * 0.1 }}
@@ -161,6 +166,8 @@ const HomePage = () => {
 										<MinimalBlogPost blog={blog} index={i} />
 									</AnimationWrapper>
 								))
+							) : (
+								<NoDataMessage message="No Trending Blog" />
 							)}
 						</div>
 					</div>
