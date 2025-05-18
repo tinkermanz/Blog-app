@@ -20,7 +20,7 @@ const HomePage = () => {
 		"social media",
 		"cooking",
 		"tech",
-		"finances",
+		"finance",
 		"travel",
 	];
 
@@ -28,6 +28,20 @@ const HomePage = () => {
 		axios
 			.get(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blogs")
 			.then(({ data }) => {
+				setBlogs(data.blogs);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
+	const fetchBlogsByCategory = () => {
+		axios
+			.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {
+				tag: pageState,
+			})
+			.then(({ data }) => {
+				console.log(data);
 				setBlogs(data.blogs);
 			})
 			.catch((err) => {
@@ -63,8 +77,10 @@ const HomePage = () => {
 		activeTabRef.current.click();
 
 		if (pageState === "home") fetchLatestBlogs();
+		else fetchBlogsByCategory();
+
 		if (!trendingBlogs) fetchTrendingBlogs();
-	}, [pageState, trendingBlogs]);
+	}, [pageState]);
 
 	return (
 		<AnimationWrapper>

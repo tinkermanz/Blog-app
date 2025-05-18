@@ -8,7 +8,7 @@ const BlogPostCard = ({ content, author }) => {
 		title,
 		des,
 		banner,
-		activity: { totals_likes },
+		activity: { total_likes },
 		blog_id: id,
 	} = content;
 
@@ -38,7 +38,7 @@ const BlogPostCard = ({ content, author }) => {
 					<span className="btn-light py-1 px-4">{tags[0]}</span>
 					<span className="ml-3 flex items-center gap-2 text-dark-grey">
 						<i className="fi fi-rr-heart text-xl"></i>
-						{totals_likes}
+						{total_likes}
 					</span>
 				</div>
 			</div>
